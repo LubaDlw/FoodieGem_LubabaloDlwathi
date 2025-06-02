@@ -1,0 +1,45 @@
+/* Root container: full height, vertical layout */
+.restaurants-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f9f9f9;
+}
+
+/* Scrollable main area, leaving room for bottom nav */
+.restaurants-container {
+  flex: 1;
+  padding: 16px;
+  padding-bottom: 70px; /* space for bottom nav */
+  overflow-y: auto;
+}
+
+/* Title below search bar */
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 20px 0;
+  color: #333;
+}
+
+/* Grid: 1 column by default (mobile) */
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+  padding-bottom: 20px;
+}
+
+/* ≥ 768px (tablet): 4 columns */
+@media (min-width: 768px) {
+  .restaurants-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ≥ 1024px (desktop): 4 columns (same as tablet) */
+@media (min-width: 1024px) {
+  .restaurants-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -1,0 +1,71 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.home-container {
+  flex: 1;
+  padding: 16px;
+  padding-bottom: 70px; /* Space for bottom navigation */
+  overflow-y: auto;
+}
+
+/* Section headers: title aligned left, button aligned right
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+} */
+
+/* View More / Explore / View Promos buttons */
+.view-more-btn,
+.browse-categories-btn,
+.view-promos-btn {
+  background-color: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+}
+
+.view-more-btn:hover,
+.browse-categories-btn:hover,
+.view-promos-btn:hover {
+  background-color: #ff5252;
+}
+
+/* Grid for the 4 popular restaurants */
+.popular-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .popular-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* The “Browse Categories” and “Promos” sections can be left as simple button-only rows,
+   but you can add more styling or preview content as needed. */
+
+.categories-section,
+.promos-section {
+  margin-top: 24px;
+}
+

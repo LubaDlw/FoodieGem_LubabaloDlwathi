@@ -1,0 +1,41 @@
+.categories-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.categories-container {
+  flex: 1;
+  padding: 16px;
+  padding-bottom: 70px; /* Space for bottom navigation */
+  overflow-y: auto;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 20px 0;
+  color: #333;
+}
+
+.categories-grid-full {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding-bottom: 20px;
+}
+
+/* For tablets and larger screens */
+@media (min-width: 768px) {
+  .categories-grid-full {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* For desktops */
+@media (min-width: 1024px) {
+  .categories-grid-full {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
