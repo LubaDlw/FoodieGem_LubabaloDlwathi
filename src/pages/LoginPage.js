@@ -1,4 +1,5 @@
-// LoginPage.js
+// src/pages/LoginPage.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -15,16 +16,16 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    
-    // Simple validation
-    if (!email || !password) {
-      setError('Please enter both email and password.');
+
+    // Simple validation: require name, email, and password
+    if (!name || !email || !password) {
+      setError('Please enter your name, email, and password.');
       return;
     }
-    
-    // Try to login
-    const success = login(email, password);
-    
+
+    // Call login(name, email, password) so AuthContext stores the name
+    const success = login(name, email, password);
+
     if (success) {
       // Redirect to the welcome splash instead of directly to home
       navigate('/welcome-splash');
@@ -39,21 +40,10 @@ const LoginPage = () => {
         <h1 className="auth-logo">FoodieGem</h1>
         <h2 className="auth-title">Welcome Back</h2>
         <p className="auth-subtitle">Sign in to continue</p>
-        
+
         {error && <div className="auth-error">{error}</div>}
-        
+
         <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-            />
-          </div>
-          
           <div className="form-group">
             <label htmlFor="name">Name</label>
             <input
@@ -64,7 +54,18 @@ const LoginPage = () => {
               placeholder="Enter your name"
             />
           </div>
-          
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+            />
+          </div>
+
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -75,10 +76,12 @@ const LoginPage = () => {
               placeholder="Enter your password"
             />
           </div>
-          
-          <button type="submit" className="auth-button">Login</button>
+
+          <button type="submit" className="auth-button">
+            Login
+          </button>
         </form>
-        
+
         <div className="auth-links">
           <a href="#forgot-password">Forgot Password?</a>
           <div className="auth-separator">

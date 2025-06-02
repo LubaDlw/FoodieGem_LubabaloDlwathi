@@ -1,7 +1,9 @@
+// src/components/Header.jsx
+
 import React from 'react';
 import { LogOut } from 'lucide-react';
 import '../styles/Header.css';
-import { useAuth } from '../context/AuthContext'; // Adjust path if needed
+import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -21,11 +23,10 @@ const Header = () => {
         </div>
       </div>
       <div className="welcome-text">
-        Welcome back, {user?.displayName || user?.email || 'Guest'}
+        Welcome back, {user || 'Guest'}
       </div>
     </header>
   );
 };
 
 export default Header;
-//checking if git worked
