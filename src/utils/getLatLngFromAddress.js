@@ -1,6 +1,6 @@
 // src/utils/getLatLngFromAddress.js
 const getLatLngFromAddress = async (address) => {
-  const apiKey = "AIzaSyCGzIc7FwUjv-h5m-XijoYstEUO4oBovEY";
+  const apiKey  = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   const encodedAddress = encodeURIComponent(address);
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${apiKey}`;
 
@@ -28,3 +28,5 @@ export default getLatLngFromAddress;
 // "AIzaSyCGzIc7FwUjv-h5m-XijoYstEUO4oBovEY"
 
 // "IzaSyCGzIc7FwUjv-h5m-XijoYstEUO4oBovEY"
+
+// AIzaSyCGzIc7FwUjv-h5m-XijoYstEUO4oBovEY
