@@ -25,9 +25,16 @@ const RestaurantsPage = () => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return sortedByRating;
     return sortedByRating.filter((r) =>
-      r.name.toLowerCase().includes(q)
+      r.name.toLowerCase().includes(q) ||
+      r.cuisine?.toLowerCase().includes(q) ||
+      r.description?.toLowerCase().includes(q) ||
+      r.tags?.some(tag => tag.toLowerCase().includes(q))
     );
   }, [searchQuery, sortedByRating]);
+
+  const handleSearchChange = (searchValue) => {
+    setSearchQuery(searchValue);
+  };
 
   if (loading) {
     return (
@@ -36,9 +43,7 @@ const RestaurantsPage = () => {
         <div className="restaurants-container">
           <p>Loading restaurants…</p>
         </div>
-        <BottomNavigation 
-        //onNavigate={handleNavigate} 
-        activeTab="restaurants" />
+        <BottomNavigation activeTab="restaurants" />
       </div>
     );
   }
@@ -51,10 +56,10 @@ const RestaurantsPage = () => {
         <SearchBar
           placeholder="Search for restaurants..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onSearch={handleSearchChange}
         />
 
-        {filtered.length === 0 ? (
+        {searchQuery && filtered.length === 0 ? (
           <p>No restaurants match "{searchQuery}".</p>
         ) : (
           <RestaurantSection
@@ -64,9 +69,7 @@ const RestaurantsPage = () => {
         )}
       </div>
 
-      <BottomNavigation
-      // onNavigate={handleNavigate}
-       activeTab="restaurants" />
+      <BottomNavigation activeTab="restaurants" />
     </div>
   );
 };

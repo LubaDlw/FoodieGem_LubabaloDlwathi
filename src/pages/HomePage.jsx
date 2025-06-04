@@ -62,7 +62,7 @@ const HomePage = () => {
       <Header user={user} onLogout={handleLogout} />
       
       <div className="home-container">
-        <SearchBar />
+        {/* <SearchBar /> */}
         
         <div className="welcome-section">
           <h1>Discover the best food around you</h1>

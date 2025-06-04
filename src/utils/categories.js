@@ -4,7 +4,7 @@ export const categories = [
   { id: 1, name: "Date Night", image: "../assets/date-night.png"},
   { id: 2, name: "Budget Friendly", image: "../assets/budgetBites.jpg" },
   { id: 3, name: "Hidden Gems", image: "../assets/gem.png" },
-  { id: 4, name: "Near You", image: "../assets/nearYou.jpg" },
+ // { id: 4, name: "Near You", image: "../assets/nearYou.jpg" }, //Removed due to scope
   { id: 5, name: "Study / Work Spots", image: "../assets/mortarboard.png" },
   { id: 6, name: "Family Friendly", image: "../assets/family.jpg" },
   { id: 7, name: "Breakfast / Brunch", image: "../assets/breakfast.png" },

@@ -21,7 +21,7 @@ const CategoriesPage = () => {
       <Header title="Categories" />
 
       <div className="categories-container">
-        <SearchBar placeholder="Search for categories..." />
+        {/* <SearchBar placeholder="Search for categories..." /> */}
         <h1 className="page-title">All Categories</h1>
 
         <div className="categories-grid-full">

@@ -18,8 +18,9 @@ import RestaurantDetailPage from './pages/RestaurantDetailPage';
 import RestaurantsPage from './pages/RestaurantsPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import ProfilePage from './pages/ProfilePage';
+import DocumentationPage from './pages/DocumentationPage';
 
-// SubmitGemPage (for “Submit a Gem” flow)
+// SubmitGemPage (for "Submit a Gem" flow)
 import SubmitGemPage from './pages/SubmitGemPage';
 
 import './App.css';
@@ -53,9 +54,12 @@ function App() {
 
                 {/* ─── Submit Gem Route ─────────────────────────────────────── */}
                 <Route path="/submit-gem" element={<SubmitGemPage />} />
+
+                {/* ─── Documentation Route ─────────────────────────────────── */}
+                <Route path="/documentation" element={<DocumentationPage />} />
               </Route>
 
-              {/* ─── Catch-all (redirect any unknown URL to “/”) ────────────── */}
+              {/* ─── Catch-all (redirect any unknown URL to "/") ────────────── */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
