@@ -1,11 +1,11 @@
-// Import the functions you need from the SDKs you need
+
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth"; // ADD THIS LINE
+import { getAuth } from "firebase/auth"; // ADD fb auth import
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
 
-// Your web app's Firebase configuration
+// fb config
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "foodiegem-6da5b.firebaseapp.com",

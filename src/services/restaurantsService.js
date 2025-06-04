@@ -1,4 +1,4 @@
-// src/services/restaurantsService.js
+// handle rest submissiond
 import {
   collection,
   doc,
@@ -13,17 +13,14 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
-/**
- * Submit a new restaurant to Firebase, using provided image URLs directly.
- */
 export const submitRestaurant = async (
   restaurantData,
-  mainImageUrl,         // string URL (instead of File)
-  additionalImageUrls = [], // array of string URLs
+  mainImageUrl,         // string URL (instead of File)  //hero image
+  additionalImageUrls = [], // array of string URLs  //scrooll iumages
   userId
 ) => {
   try {
-    // 1) Build the final object exactly as you want it in Firestore:
+    // Firebase restuarnt data validation:
     const finalRestaurantData = {
       // Core fields (string values or arrays) coming from the form:
       name: restaurantData.name,
@@ -59,7 +56,7 @@ export const submitRestaurant = async (
 };
 
 /**
- * (Other “read” utilities remain unchanged; shown here for completeness.)
+ * (Other “read” utilities remain unchanged.)
  */
 export const getAllRestaurants = async () => {
   try {

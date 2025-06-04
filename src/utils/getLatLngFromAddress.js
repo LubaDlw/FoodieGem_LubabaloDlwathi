@@ -1,4 +1,4 @@
-// src/utils/getLatLngFromAddress.js
+// script to convert distance to text using google api
 const getLatLngFromAddress = async (address) => {
   const apiKey  = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   const encodedAddress = encodeURIComponent(address);
