@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import BottomNavigation from '../components/BottomNavigation';
-import RestaurantCard from '../components/RestaurantCard';
+import RestaurantSection from '../components/RestaurantSection';
 import { useRestaurants } from '../context/RestaurantContext';
 import '../styles/RestaurantsPage.css';
 
@@ -16,7 +16,7 @@ const RestaurantsPage = () => {
   // 1. Sort by rating (descending) whenever `restaurants` updates
   const sortedByRating = useMemo(() => {
     if (!restaurants) return [];
-    // Make a shallow copy so we don’t mutate context state
+    // Make a shallow copy so we don't mutate context state
     return [...restaurants].sort((a, b) => (b.rating || 0) - (a.rating || 0));
   }, [restaurants]);
 
@@ -28,14 +28,6 @@ const RestaurantsPage = () => {
       r.name.toLowerCase().includes(q)
     );
   }, [searchQuery, sortedByRating]);
-
-  const handleCardClick = (id) => {
-    // This mirrors your RestaurantCard’s <Link to={`/restaurant/${id}`}> as well,
-    // but if you want programmatic navigation instead of <Link> you can also do:
-    navigate(`/restaurant/${id}`);
-  };
-
-  
 
   if (loading) {
     return (
@@ -62,25 +54,13 @@ const RestaurantsPage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        <h1 className="page-title">Restaurants (Highest Rated First)</h1>
-
         {filtered.length === 0 ? (
-          <p>No restaurants match “{searchQuery}”.</p>
+          <p>No restaurants match "{searchQuery}".</p>
         ) : (
-          <div className="restaurants-grid">
-            {filtered.map((r) => (
-              <RestaurantCard
-                key={r.id}
-                id={r.id}
-                name={r.name}
-                image={r.image}
-                location={r.location}
-                rating={r.rating}
-                distance={r.distance}
-                onClick={() => handleCardClick(r.id)}
-              />
-            ))}
-          </div>
+          <RestaurantSection
+            title="Restaurants (Highest Rated First)"
+            restaurants={filtered}
+          />
         )}
       </div>
 

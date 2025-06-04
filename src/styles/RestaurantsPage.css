@@ -14,32 +14,34 @@
   overflow-y: auto;
 }
 
-/* Title below search bar */
-.page-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin: 20px 0;
-  color: #333;
+/* Loading and no results messages */
+.restaurants-container p {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
 }
 
-
-/* .restaurants-grid {
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 16px;
-  padding-bottom: 20px;
-} 
-
-/* ≥ 768px (tablet): 4 columns */
-/* @media (min-width: 768px) {
-  .restaurants-grid {
-    grid-template-columns: repeat(3, 1fr);
+/* Mobile devices (up to 767px) */
+@media (max-width: 767px) {
+  .restaurants-container {
+    padding: 12px;
+    padding-bottom: 70px;
   }
-} */
+}
 
-/* ≥ 1024px (desktop): 4 columns (same as tablet) */
-/* @media (min-width: 1024px) {
-  .restaurants-grid {
-    grid-template-columns: repeat(3, 1fr);
+/* Desktop devices (1024px and up) */
+@media (min-width: 1024px) {
+  .restaurants-container {
+    padding: 20px;
+    padding-bottom: 70px;
   }
-} */
+}
+
+/* Large desktop devices (1200px and up) */
+@media (min-width: 1200px) {
+  .restaurants-container {
+    padding: 24px;
+    padding-bottom: 70px;
+  }
+}

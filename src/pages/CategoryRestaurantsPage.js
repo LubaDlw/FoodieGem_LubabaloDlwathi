@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useRestaurants } from '../context/RestaurantContext';
 
 import Header from '../components/Header';
-import RestaurantCard from '../components/RestaurantCard';
+import RestaurantSection from '../components/RestaurantSection';
 import BottomNavigation from '../components/BottomNavigation';
 
 import '../styles/CategoryRestaurantsPage.css';
@@ -22,31 +22,28 @@ const CategoryRestaurantsPage = () => {
     )
   );
 
-
+  if (loading) {
+    return (
+      <div className="category-restaurants-page">
+        <Header title={categoryName} />
+        <div className="category-container">
+          <p>Loading restaurants...</p>
+        </div>
+        <BottomNavigation activeTab="explore" />
+      </div>
+    );
+  }
 
   return (
     <div className="category-restaurants-page">
       <Header title={categoryName} />
 
-      <div className="category-header">
-        <h1>{categoryName} Restaurants</h1>
-      </div>
-
-      <div className="restaurants-grid">
-        {loading ? (
-          <p>Loading...</p>
-        ) : filteredRestaurants.length > 0 ? (
-          filteredRestaurants.map((r) => (
-            <RestaurantCard
-              key={r.id}
-              id={r.id}
-              name={r.name}
-              rating={r.rating}
-              location={r.location}
-              image={r.image}
-              distance={r.distance}
-            />
-          ))
+      <div className="category-container">
+        {filteredRestaurants.length > 0 ? (
+          <RestaurantSection
+            title={`${categoryName} Restaurants`}
+            restaurants={filteredRestaurants}
+          />
         ) : (
           <p className="no-results">
             No restaurants found in this category.
@@ -54,10 +51,7 @@ const CategoryRestaurantsPage = () => {
         )}
       </div>
 
-      <BottomNavigation
-        //onNavigate={handleNavigate}
-        activeTab="explore"
-      />
+      <BottomNavigation activeTab="explore" />
     </div>
   );
 };

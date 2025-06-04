@@ -1,3 +1,4 @@
+/* Root container: full height, vertical layout */
 .home-page {
   display: flex;
   flex-direction: column;
@@ -5,6 +6,7 @@
   background-color: #f9f9f9;
 }
 
+/* Scrollable main area, leaving room for bottom nav */
 .home-container {
   flex: 1;
   padding: 16px;
@@ -12,60 +14,59 @@
   overflow-y: auto;
 }
 
-/* Section headers: title aligned left, button aligned right
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+/* Welcome section styling */
+.welcome-section {
+  margin: 20px 0;
 }
 
-.section-header h2 {
-  font-size: 20px;
+.welcome-section h1 {
+  font-size: 24px;
   font-weight: 600;
   color: #333;
+  text-align: center;
   margin: 0;
-} 
-
-/* View More / Explore / View Promos buttons */
-.view-more-btn,
-.browse-categories-btn,
-.view-promos-btn {
-  background-color: #ff6b6b;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.1s ease-in-out;
 }
 
-.view-more-btn:hover,
-.browse-categories-btn:hover,
-.view-promos-btn:hover {
-  background-color: #ff5252;
+/* Loading message */
+.home-container p {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
 }
 
-/* Grid for the 4 popular restaurants */
-/* .popular-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-@media (min-width: 768px) {
-  .popular-grid {
-    grid-template-columns: repeat(4, 1fr);
+/* Mobile devices (up to 767px) */
+@media (max-width: 767px) {
+  .home-container {
+    padding: 12px;
+    padding-bottom: 70px;
   }
-} */
-
-/* The “Browse Categories” and “Promos” sections can be left as simple button-only rows,
-   but you can add more styling or preview content as needed. */
-
-.categories-section,
-.promos-section {
-  margin-top: 24px;
+  
+  .welcome-section h1 {
+    font-size: 20px;
+  }
 }
 
+/* Desktop devices (1024px and up) */
+@media (min-width: 1024px) {
+  .home-container {
+    padding: 20px;
+    padding-bottom: 70px;
+  }
+  
+  .welcome-section h1 {
+    font-size: 28px;
+  }
+}
+
+/* Large desktop devices (1200px and up) */
+@media (min-width: 1200px) {
+  .home-container {
+    padding: 24px;
+    padding-bottom: 70px;
+  }
+  
+  .welcome-section h1 {
+    font-size: 32px;
+  }
+}

@@ -1,9 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import '../styles/RestaurantSection.css';
 import SpecialsCard from './SpecialsCard';
 
 const SpecialsSection = ({ title = "Specials & Promotions", restaurants, onViewAll }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (id) => {
+    navigate(`/restaurant/${id}`);
+  };
+
   return (
     <section className="section">
       <div className="section-header">
@@ -26,6 +33,7 @@ const SpecialsSection = ({ title = "Specials & Promotions", restaurants, onViewA
             distance={p.distance}
             image={p.image}
             promo={p.promo}
+            onClick={() => handleCardClick(p.id)}
           />
         ))}
       </div>

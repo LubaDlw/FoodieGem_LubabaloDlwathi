@@ -27,7 +27,7 @@ const HomePage = () => {
   const topRatedRestaurants = restaurants
     .filter(r => typeof r.rating === 'number')
     .sort((a, b) => b.rating - a.rating)
-    .slice(0, 5);
+    .slice(0, 4);
 
   const promoRestaurants = restaurants.filter(r => r.promo && r.promo.trim() !== '');
 
@@ -45,42 +45,46 @@ const HomePage = () => {
     navigate(`/category/${encodeURIComponent(categoryName)}`);
   };
 
+  if (loading) {
+    return (
+      <div className="home-page">
+        <Header user={user} onLogout={handleLogout} />
+        <div className="home-container">
+          <p>Loading restaurants...</p>
+        </div>
+        <BottomNavigation activeTab="home" />
+      </div>
+    );
+  }
+
   return (
     <div className="home-page">
       <Header user={user} onLogout={handleLogout} />
       
-      <main className="main-content">
+      <div className="home-container">
         <SearchBar />
         
         <div className="welcome-section">
           <h1>Discover the best food around you</h1>
         </div>
 
-        {loading ? (
-          <div className="loading">
-            Loading restaurants...
-          </div>
-        ) : (
-          <>
-            <CategorySection 
-              categories={randomCategories}
-              onViewAll={handleViewAllCategories}
-              onCategoryClick={handleCategoryClick}
-            />
-            
-            <RestaurantSection 
-              title="Popular Restaurants"
-              restaurants={topRatedRestaurants}
-              onViewAll={handleViewAllPopular}
-            />
-            
-            <SpecialsSection 
-              restaurants={promoRestaurants}
-              onViewAll={handleViewAllPromos}
-            />
-          </>
-        )}
-      </main>
+        <CategorySection 
+          categories={randomCategories}
+          onViewAll={handleViewAllCategories}
+          onCategoryClick={handleCategoryClick}
+        />
+        
+        <RestaurantSection 
+          title="Popular Restaurants"
+          restaurants={topRatedRestaurants}
+          onViewAll={handleViewAllPopular}
+        />
+        
+        <SpecialsSection 
+          restaurants={promoRestaurants}
+          onViewAll={handleViewAllPromos}
+        />
+      </div>
       
       <BottomNavigation activeTab="home" />
     </div>

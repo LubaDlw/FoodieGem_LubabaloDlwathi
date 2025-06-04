@@ -1,44 +1,47 @@
+/* Root container: full height, vertical layout */
 .category-restaurants-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #f9f9f9;
 }
 
-.category-header {
-  padding: 16px;
-}
-
-.category-header h1 {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #333;
-}
-
-/* .restaurants-grid {
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 16px;
-  padding: 0 16px 70px; 
+/* Scrollable main area, leaving room for bottom nav */
+.category-container {
   flex: 1;
-} */
+  padding: 16px;
+  padding-bottom: 70px; /* space for bottom nav */
+  overflow-y: auto;
+}
 
-/* @media (min-width: 768px) {
-  .restaurants-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-} */
-
-/* @media (min-width: 1024px) {
-  .restaurants-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-} */
-
-.no-results {
+/* Loading and no results messages */
+.category-container p, .no-results {
   text-align: center;
-  padding: 40px 20px;
-  font-size: 16px;
-  color: #999;
+  padding: 2rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Mobile devices (up to 767px) */
+@media (max-width: 767px) {
+  .category-container {
+    padding: 12px;
+    padding-bottom: 70px;
+  }
+}
+
+/* Desktop devices (1024px and up) */
+@media (min-width: 1024px) {
+  .category-container {
+    padding: 20px;
+    padding-bottom: 70px;
+  }
+}
+
+/* Large desktop devices (1200px and up) */
+@media (min-width: 1200px) {
+  .category-container {
+    padding: 24px;
+    padding-bottom: 70px;
+  }
 }
