@@ -6,15 +6,12 @@ import { useAuth } from '../context/AuthContext';
 import { useRestaurants } from '../context/RestaurantContext';
 import {
   User,
-  Settings,
   Star,
   Trophy,
   Target,
   Gem,
   MapPin,
   FileText,
-  HelpCircle,
-  Phone,
   ChevronRight,
   Award
 } from 'lucide-react';
@@ -39,12 +36,7 @@ const ProfilePage = () => {
     navigate('/submit-gem');
   };
 
-  // Navigate to edit profile
-  const handleChangeDetails = () => {
-    navigate('/edit-profile');
-  };
-
-  // If restaurants are still loading, show a spinner (optional)
+  // If restaurants are still loading, show a spinner
   if (restaurantsLoading) {
     return (
       <div className="loading-container">
@@ -54,28 +46,26 @@ const ProfilePage = () => {
     );
   }
 
-  // Gather the restaurant objects for each favorite ID:
+  // Gather the restaurant objects for each favorite ID
   const favoriteRestaurants = (user?.favorites || []).map((favId) =>
     restaurants.find((r) => r.id === favId)
-  ).filter(Boolean); // filter out any missing ones
+  ).filter(Boolean);
 
-  // Gamification data from user object (already in AuthContext)
+  // Gamification data from user object
   const submittedGems = user?.submittedGems || 0;
   const gamePoints = user?.gamePoints || 0;
   const level = user?.level || 1;
   const badges = user?.badges || [];
   const completedChallenges = user?.completedChallenges || 0;
-  const totalChallenges = user?.totalChallenges || 0;
+  const totalChallenges = user?.totalChallenges || 5;
 
   const progressPercentage = ((gamePoints / (level * 1000)) * 100).toFixed(0);
-  // Adjust “next level” formula as needed. Example: nextLevelPoints = level * 1000.
 
-  // Link sections (unchanged)
+  // Updated link sections (removed Account Settings and Change Details)
   const linkSections = [
     {
       title: 'ACCOUNT',
       items: [
-        { icon: Settings, label: 'Account Settings', path: '/settings' },
         { icon: Star, label: 'My Reviews', path: '/my-reviews' },
         { icon: MapPin, label: 'Saved Places', path: '/saved-places' }
       ]
@@ -83,19 +73,26 @@ const ProfilePage = () => {
     {
       title: 'SUPPORT',
       items: [
-        { icon: FileText, label: 'Documentation', path: '/docs' },
-        { icon: HelpCircle, label: 'FAQs', path: '/faqs' },
-        { icon: Phone, label: 'Help & Support', path: '/support' }
+        { icon: FileText, label: 'Documentation', path: '/docs' }
       ]
     }
   ];
 
-  // Badge definitions (unchanged)
+  // Enhanced badge definitions with gem-specific badges
   const badgeDefinitions = {
-    foodie: { icon: '🍽️', name: 'Foodie Explorer', color: '#FF6B6B' },
-    explorer: { icon: '🗺️', name: 'City Explorer', color: '#4ECDC4' },
-    reviewer: { icon: '⭐', name: 'Top Reviewer', color: '#45B7D1' }
-    // Add more badge definitions as needed
+    // Gem submission badges
+    firstGem: { icon: '💎', name: 'First Gem', color: '#FF6B6B', description: 'Submitted your first gem!' },
+    fiveGems: { icon: '🔥', name: 'Gem Hunter', color: '#FF8C42', description: 'Submitted 5 gems!' },
+    tenGems: { icon: '👑', name: 'Gem Master', color: '#FFD700', description: 'Submitted 10 gems!' },
+    
+    // Point-based badges
+    pointCollector: { icon: '⭐', name: 'Point Collector', color: '#45B7D1', description: 'Earned 500 points!' },
+    pointMaster: { icon: '🏆', name: 'Point Master', color: '#8E44AD', description: 'Earned 1000 points!' },
+    
+    // Favorite-based badges
+    foodie: { icon: '🍽️', name: 'Foodie Explorer', color: '#4ECDC4', description: 'Added 5+ favorites!' },
+    explorer: { icon: '🗺️', name: 'City Explorer', color: '#2ECC71', description: 'Explored the city!' },
+    reviewer: { icon: '📝', name: 'Top Reviewer', color: '#E74C3C', description: 'Active reviewer!' }
   };
 
   return (
@@ -113,12 +110,6 @@ const ProfilePage = () => {
             <p>{user?.email || ''}</p>
           </div>
         </div>
-
-        {/* Change Details Button */}
-        <button className="change-details-btn" onClick={handleChangeDetails}>
-          <Settings size={20} />
-          Change Details
-        </button>
 
         {/* Quick Stats */}
         <div className="quick-stats">
@@ -146,34 +137,36 @@ const ProfilePage = () => {
           <ChevronRight size={20} />
         </button>
 
-
-<div className="favorites-section">
-  <h3>Your Favorites</h3>
-  {favoriteRestaurants.length > 0 ? (
-    <div className="favorites-grid">
-      {favoriteRestaurants.map((fav) => (
-        <div key={fav.id} className="favorite-card">
-          <img src={fav.image} alt={fav.name} className="favorite-image" />
-          <div className="favorite-info">
-            <h4>{fav.name}</h4>
-            <p className="favorite-meta">
-              <Star size={14} fill="#FF6B35" color="#FF6B35" /> {fav.rating} • {fav.category}
-            </p>
-            <button
-              className="view-btn"
-              onClick={() => navigate(`/restaurant/${fav.id}`)}
-            >
-              View
-            </button>
-          </div>
+        {/* Favorites Section */}
+        <div className="favorites-section">
+          <h3>Your Favorites ({favoriteRestaurants.length})</h3>
+          {favoriteRestaurants.length > 0 ? (
+            <div className="favorites-grid">
+              {favoriteRestaurants.map((fav) => (
+                <div key={fav.id} className="favorite-card">
+                  <img src={fav.image} alt={fav.name} className="favorite-image" />
+                  <div className="favorite-info">
+                    <h4>{fav.name}</h4>
+                    <p className="favorite-meta">
+                      <Star size={14} fill="#FF6B35" color="#FF6B35" /> {fav.rating} • {fav.category}
+                    </p>
+                    <button
+                      className="view-btn"
+                      onClick={() => navigate(`/restaurant/${fav.id}`)}
+                    >
+                      View
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="no-favorites-msg">
+              <p>You haven't added any favorites yet.</p>
+              <p>❤️ Tap the heart on restaurants to save them here!</p>
+            </div>
+          )}
         </div>
-      ))}
-    </div>
-  ) : (
-    <p className="no-favorites-msg">You haven’t added any favorites yet.</p>
-  )}
-</div>
-
 
         {/* Gamification Section */}
         <div className="gamification-section">
@@ -234,25 +227,52 @@ const ProfilePage = () => {
 
           {/* Badges */}
           <div className="badges-container">
-            <h4>Your Badges</h4>
+            <h4>Your Badges ({badges.length})</h4>
             <div className="badges-grid">
               {badges.map((badgeKey, index) => {
                 const badge = badgeDefinitions[badgeKey];
+                if (!badge) return null;
                 return (
                   <div
                     key={index}
-                    className="badge-item"
+                    className="badge-item earned"
                     style={{ borderColor: badge.color }}
+                    title={badge.description}
                   >
                     <span className="badge-icon">{badge.icon}</span>
                     <span className="badge-name">{badge.name}</span>
                   </div>
                 );
               })}
-              <div className="badge-item locked">
-                <Award size={24} />
-                <span className="badge-name">More to unlock!</span>
-              </div>
+              
+              {/* Show next available badges */}
+              {submittedGems === 0 && !badges.includes('firstGem') && (
+                <div className="badge-item locked" title="Submit your first gem to unlock!">
+                  <span className="badge-icon">💎</span>
+                  <span className="badge-name">First Gem</span>
+                </div>
+              )}
+              
+              {submittedGems < 5 && submittedGems > 0 && !badges.includes('fiveGems') && (
+                <div className="badge-item locked" title={`Submit ${5 - submittedGems} more gems to unlock!`}>
+                  <span className="badge-icon">🔥</span>
+                  <span className="badge-name">Gem Hunter</span>
+                </div>
+              )}
+              
+              {favoriteRestaurants.length < 5 && !badges.includes('foodie') && (
+                <div className="badge-item locked" title={`Add ${5 - favoriteRestaurants.length} more favorites to unlock!`}>
+                  <span className="badge-icon">🍽️</span>
+                  <span className="badge-name">Foodie Explorer</span>
+                </div>
+              )}
+              
+              {badges.length === 0 && (
+                <div className="badge-item locked">
+                  <Award size={24} />
+                  <span className="badge-name">Start earning badges!</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

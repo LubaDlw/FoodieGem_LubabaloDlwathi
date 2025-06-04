@@ -15,7 +15,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null); // Will include: { uid, email, name, submittedGems, gamePoints, level, badges, favorites, ... }
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const auth = getAuth();
@@ -24,11 +24,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // User is signed in
         setIsAuthenticated(true);
 
         try {
-          // Get additional user data from Firestore
           const userDocRef = doc(db, 'users', firebaseUser.uid);
           const userDocSnap = await getDoc(userDocRef);
 
@@ -42,12 +40,12 @@ export const AuthProvider = ({ children }) => {
               gamePoints: userData.gamePoints || 0,
               level: userData.level || 1,
               badges: userData.badges || [],
-              favorites: userData.favorites || [],    // ← pull in favorites array
-              // Any other fields from userData you want to merge…
+              favorites: userData.favorites || [],
+              completedChallenges: userData.completedChallenges || 0,
+              totalChallenges: userData.totalChallenges || 5, // Default total challenges
               ...userData
             });
           } else {
-            // If somehow the user document is missing, create a minimal one
             await setDoc(userDocRef, {
               name: firebaseUser.displayName || 'FoodieGem User',
               email: firebaseUser.email,
@@ -56,7 +54,9 @@ export const AuthProvider = ({ children }) => {
               gamePoints: 0,
               level: 1,
               badges: [],
-              favorites: []      // initialize empty favorites
+              favorites: [],
+              completedChallenges: 0,
+              totalChallenges: 5
             });
             setUser({
               uid: firebaseUser.uid,
@@ -66,12 +66,13 @@ export const AuthProvider = ({ children }) => {
               gamePoints: 0,
               level: 1,
               badges: [],
-              favorites: []
+              favorites: [],
+              completedChallenges: 0,
+              totalChallenges: 5
             });
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
-          // Fallback to minimal user object
           setUser({
             uid: firebaseUser.uid,
             email: firebaseUser.email,
@@ -80,11 +81,12 @@ export const AuthProvider = ({ children }) => {
             gamePoints: 0,
             level: 1,
             badges: [],
-            favorites: []
+            favorites: [],
+            completedChallenges: 0,
+            totalChallenges: 5
           });
         }
       } else {
-        // User is signed out
         setIsAuthenticated(false);
         setUser(null);
       }
@@ -99,16 +101,13 @@ export const AuthProvider = ({ children }) => {
    */
   const register = async (name, email, password) => {
     try {
-      // Create user account
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Update display name
       await updateProfile(firebaseUser, {
         displayName: name
       });
 
-      // Save additional user data to Firestore, including an empty favorites array
       await setDoc(doc(db, 'users', firebaseUser.uid), {
         name: name,
         email: email,
@@ -117,7 +116,9 @@ export const AuthProvider = ({ children }) => {
         gamePoints: 0,
         level: 1,
         badges: [],
-        favorites: []       // initialize empty favorites
+        favorites: [],
+        completedChallenges: 0,
+        totalChallenges: 5
       });
 
       return { success: true };
@@ -148,7 +149,6 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Login with name (for backward compatibility)
-   * This is a simplified version— in production you'd want proper authentication
    */
   const loginWithName = (name) => {
     setIsAuthenticated(true);
@@ -176,15 +176,26 @@ export const AuthProvider = ({ children }) => {
    * Update user profile
    */
   const updateUserProfile = async (updates) => {
-    if (!user) return { success: false, error: 'No user logged in' };
+    if (!user) {
+      console.error('updateUserProfile: No user logged in');
+      return { success: false, error: 'No user logged in' };
+    }
+
+    if (!user.uid) {
+      console.error('updateUserProfile: User has no UID');
+      return { success: false, error: 'User has no UID' };
+    }
 
     try {
+      console.log('Updating user profile:', { uid: user.uid, updates });
+      
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, updates); // merge: true by default for updateDoc
+      await updateDoc(userRef, updates);
 
       // Update local state
       setUser((prev) => ({ ...prev, ...updates }));
 
+      console.log('User profile updated successfully');
       return { success: true };
     } catch (error) {
       console.error('Profile update error:', error);
@@ -196,21 +207,125 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Increment user's submittedGems count
+   * Check and award badges based on user achievements
+   */
+  const checkAndAwardBadges = async (submittedGems, gamePoints) => {
+    if (!user) {
+      console.log('checkAndAwardBadges: No user found');
+      return;
+    }
+
+    const currentBadges = user.badges || [];
+    const newBadges = [...currentBadges];
+    let badgesAwarded = false;
+
+    console.log('Checking badges for:', { submittedGems, gamePoints, currentBadges });
+
+    // First Gem Badge
+    if (submittedGems >= 1 && !currentBadges.includes('firstGem')) {
+      newBadges.push('firstGem');
+      badgesAwarded = true;
+      console.log('Awarded firstGem badge');
+    }
+
+    // 5 Gems Badge
+    if (submittedGems >= 5 && !currentBadges.includes('fiveGems')) {
+      newBadges.push('fiveGems');
+      badgesAwarded = true;
+      console.log('Awarded fiveGems badge');
+    }
+
+    // 10 Gems Badge
+    if (submittedGems >= 10 && !currentBadges.includes('tenGems')) {
+      newBadges.push('tenGems');
+      badgesAwarded = true;
+      console.log('Awarded tenGems badge');
+    }
+
+    // Point-based badges
+    if (gamePoints >= 500 && !currentBadges.includes('pointCollector')) {
+      newBadges.push('pointCollector');
+      badgesAwarded = true;
+      console.log('Awarded pointCollector badge');
+    }
+
+    if (gamePoints >= 1000 && !currentBadges.includes('pointMaster')) {
+      newBadges.push('pointMaster');
+      badgesAwarded = true;
+      console.log('Awarded pointMaster badge');
+    }
+
+    // Foodie Explorer badge (for having favorites)
+    if (user.favorites && user.favorites.length >= 5 && !currentBadges.includes('foodie')) {
+      newBadges.push('foodie');
+      badgesAwarded = true;
+      console.log('Awarded foodie badge');
+    }
+
+    // Update badges if new ones were awarded
+    if (badgesAwarded) {
+      console.log('Updating badges:', newBadges);
+      const result = await updateUserProfile({ badges: newBadges });
+      if (!result.success) {
+        console.error('Failed to update badges:', result.error);
+      }
+    } else {
+      console.log('No new badges to award');
+    }
+  };
+
+  /**
+   * Increment user's submittedGems count and award badges
    */
   const incrementSubmittedGems = async () => {
-    if (!user) return;
+    console.log('incrementSubmittedGems called');
+    
+    if (!user) {
+      console.error('incrementSubmittedGems: No user found');
+      return { success: false, error: 'No user logged in' };
+    }
+
+    if (!user.uid) {
+      console.error('incrementSubmittedGems: User has no UID');
+      return { success: false, error: 'User has no UID' };
+    }
 
     try {
-      const newCount = (user.submittedGems || 0) + 1;
-      const newPoints = (user.gamePoints || 0) + 50; // Award 50 points per gem
+      const currentGems = user.submittedGems || 0;
+      const currentPoints = user.gamePoints || 0;
+      
+      const newCount = currentGems + 1;
+      const newPoints = currentPoints + 50; // Award 50 points per gem
+      const newLevel = Math.floor(newPoints / 1000) + 1; // Level up every 1000 points
 
-      await updateUserProfile({
-        submittedGems: newCount,
-        gamePoints: newPoints
+      console.log('Incrementing gems:', {
+        currentGems,
+        currentPoints,
+        newCount,
+        newPoints,
+        newLevel,
+        userId: user.uid
       });
+
+      const updateResult = await updateUserProfile({
+        submittedGems: newCount,
+        gamePoints: newPoints,
+        level: newLevel
+      });
+
+      if (!updateResult.success) {
+        console.error('Failed to update user profile:', updateResult.error);
+        return updateResult;
+      }
+
+      // Check and award badges after updating
+      await checkAndAwardBadges(newCount, newPoints);
+
+      console.log('Successfully incremented submitted gems');
+      return { success: true };
     } catch (error) {
       console.error('Error updating gem count:', error);
+      return { success: false, error: error.message };
     }
   };
 
@@ -221,7 +336,6 @@ export const AuthProvider = ({ children }) => {
     if (!user) return { success: false, error: 'No user logged in' };
 
     try {
-      // Prevent duplicates
       const existing = user.favorites || [];
       if (existing.includes(restaurantId)) {
         return { success: true };
@@ -229,6 +343,18 @@ export const AuthProvider = ({ children }) => {
 
       const newFavorites = [...existing, restaurantId];
       await updateUserProfile({ favorites: newFavorites });
+
+      // Award points for adding favorites
+      const newPoints = (user.gamePoints || 0) + 10; // 10 points for adding favorite
+      const newLevel = Math.floor(newPoints / 1000) + 1;
+      
+      await updateUserProfile({ 
+        gamePoints: newPoints,
+        level: newLevel
+      });
+
+      // Check for foodie badge
+      await checkAndAwardBadges(user.submittedGems || 0, newPoints);
 
       return { success: true };
     } catch (error) {
@@ -265,14 +391,14 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUserProfile,
     incrementSubmittedGems,
-    addFavorite,        // ← expose favorites helper
-    removeFavorite      // ← expose favorites helper
+    addFavorite,
+    removeFavorite,
+    checkAndAwardBadges
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook for consuming the auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === null) {
@@ -280,5 +406,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-
