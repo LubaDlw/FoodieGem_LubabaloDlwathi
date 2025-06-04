@@ -25,7 +25,7 @@
   font-weight: 600;
   color: #333;
   margin: 0;
-} */
+} 
 
 /* View More / Explore / View Promos buttons */
 .view-more-btn,
@@ -48,7 +48,7 @@
 }
 
 /* Grid for the 4 popular restaurants */
-.popular-grid {
+/* .popular-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
@@ -59,7 +59,7 @@
   .popular-grid {
     grid-template-columns: repeat(4, 1fr);
   }
-}
+} */
 
 /* The “Browse Categories” and “Promos” sections can be left as simple button-only rows,
    but you can add more styling or preview content as needed. */

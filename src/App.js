@@ -15,9 +15,9 @@ import CategoryRestaurantsPage from './pages/CategoryRestaurantsPage';
 import WelcomeSplash from './pages/WelcomeSplash';
 import PromosPage from './pages/PromosPage';
 import RestaurantDetailPage from './pages/RestaurantDetailPage';
-
-// ↓ Import RestaurantsPage:
 import RestaurantsPage from './pages/RestaurantsPage';
+import SearchResultsPage from './pages/SearchResultsPage';
+import ProfilePage from './pages/ProfilePage'; // Add this import
 
 import './App.css';
 
@@ -41,9 +41,9 @@ function App() {
                 <Route path="/category/:categoryName" element={<CategoryRestaurantsPage />} />
                 <Route path="/promos" element={<PromosPage />} />
                 <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
-
-+               {/* All Restaurants page */}
-+               <Route path="/restaurants" element={<RestaurantsPage />} />
+                <Route path="/restaurants" element={<RestaurantsPage />} />
+                <Route path="/search" element={<SearchResultsPage />} />
+                <Route path="/profile" element={<ProfilePage />} /> {/* Add profile route */}
               </Route>
 
               {/* Catch-all fallback */}
