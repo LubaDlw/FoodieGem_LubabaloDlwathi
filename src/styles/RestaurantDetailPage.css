@@ -484,3 +484,25 @@
     padding: 24px;
   }
 }
+
+
+/* At the bottom of src/styles/RestaurantDetailPage.css */
+
+.favorite-btn {
+  transition: transform 0.2s ease;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.1);
+}
+
+.favorite-btn.favorited svg {
+  fill: #FF6B35;
+  color: #FF6B35;
+}
+
+.favorite-btn svg {
+  stroke: #333;
+  fill: none;
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}

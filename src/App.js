@@ -17,7 +17,10 @@ import PromosPage from './pages/PromosPage';
 import RestaurantDetailPage from './pages/RestaurantDetailPage';
 import RestaurantsPage from './pages/RestaurantsPage';
 import SearchResultsPage from './pages/SearchResultsPage';
-import ProfilePage from './pages/ProfilePage'; // Add this import
+import ProfilePage from './pages/ProfilePage';
+
+// SubmitGemPage (for “Submit a Gem” flow)
+import SubmitGemPage from './pages/SubmitGemPage';
 
 import './App.css';
 
@@ -28,25 +31,31 @@ function App() {
         <Router>
           <div className="App">
             <Routes>
-              {/* Public Routes */}
+              {/* ─── Public Routes ─────────────────────────────────────────────── */}
               <Route path="/" element={<SplashPage />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<LoginPage />} /> {/* Using LoginPage for now */}
+              {/* We assume LoginPage handles both login & register modes */}
 
-              {/* Protected Routes */}
+              {/* ─── Protected Routes (wrapped in PrivateRoute) ────────────────── */}
               <Route element={<PrivateRoute />}>
                 <Route path="/welcome-splash" element={<WelcomeSplash />} />
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/explore" element={<CategoriesPage />} />
-                <Route path="/category/:categoryName" element={<CategoryRestaurantsPage />} />
+                <Route 
+                  path="/category/:categoryName" 
+                  element={<CategoryRestaurantsPage />} 
+                />
                 <Route path="/promos" element={<PromosPage />} />
                 <Route path="/restaurant/:id" element={<RestaurantDetailPage />} />
                 <Route path="/restaurants" element={<RestaurantsPage />} />
                 <Route path="/search" element={<SearchResultsPage />} />
-                <Route path="/profile" element={<ProfilePage />} /> {/* Add profile route */}
+                <Route path="/profile" element={<ProfilePage />} />
+
+                {/* ─── Submit Gem Route ─────────────────────────────────────── */}
+                <Route path="/submit-gem" element={<SubmitGemPage />} />
               </Route>
 
-              {/* Catch-all fallback */}
+              {/* ─── Catch-all (redirect any unknown URL to “/”) ────────────── */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

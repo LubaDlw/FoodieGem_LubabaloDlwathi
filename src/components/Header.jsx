@@ -23,7 +23,7 @@ const Header = () => {
         </div>
       </div>
       <div className="welcome-text">
-        Welcome back, {user || 'Guest'}
+        Welcome back, {user?.name || 'Guest'}
       </div>
     </header>
   );

@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+// src/pages/ProfilePage.jsx
+
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  User, 
-  Settings, 
-  Star, 
-  Trophy, 
-  Target, 
-  Gift,
+import { useRestaurants } from '../context/RestaurantContext';
+import {
+  User,
+  Settings,
+  Star,
+  Trophy,
+  Target,
+  Gem,
   MapPin,
   FileText,
   HelpCircle,
   Phone,
   ChevronRight,
-  Award,
-  Gem
+  Award
 } from 'lucide-react';
 
 import Header from '../components/Header';
@@ -23,34 +25,52 @@ import '../styles/ProfilePage.css';
 
 const ProfilePage = () => {
   const { user, logout } = useAuth();
+  const { restaurants, loading: restaurantsLoading } = useRestaurants();
   const navigate = useNavigate();
-  
-  // Mock gamification data - you can replace with real data from context/API
-  const [userStats] = useState({
-    gamePoints: 1250,
-    level: 5,
-    nextLevelPoints: 1500,
-    completedChallenges: 12,
-    totalChallenges: 20,
-    badges: ['foodie', 'explorer', 'reviewer'],
-    submittedGems: 3
-  });
 
-  const progressPercentage = ((userStats.gamePoints / userStats.nextLevelPoints) * 100).toFixed(0);
-
+  // Handle logout
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  // Navigate to submit a gem
   const handleSubmitGem = () => {
     navigate('/submit-gem');
   };
 
+  // Navigate to edit profile
   const handleChangeDetails = () => {
     navigate('/edit-profile');
   };
 
+  // If restaurants are still loading, show a spinner (optional)
+  if (restaurantsLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading favorites...</p>
+      </div>
+    );
+  }
+
+  // Gather the restaurant objects for each favorite ID:
+  const favoriteRestaurants = (user?.favorites || []).map((favId) =>
+    restaurants.find((r) => r.id === favId)
+  ).filter(Boolean); // filter out any missing ones
+
+  // Gamification data from user object (already in AuthContext)
+  const submittedGems = user?.submittedGems || 0;
+  const gamePoints = user?.gamePoints || 0;
+  const level = user?.level || 1;
+  const badges = user?.badges || [];
+  const completedChallenges = user?.completedChallenges || 0;
+  const totalChallenges = user?.totalChallenges || 0;
+
+  const progressPercentage = ((gamePoints / (level * 1000)) * 100).toFixed(0);
+  // Adjust “next level” formula as needed. Example: nextLevelPoints = level * 1000.
+
+  // Link sections (unchanged)
   const linkSections = [
     {
       title: 'ACCOUNT',
@@ -70,16 +90,18 @@ const ProfilePage = () => {
     }
   ];
 
-  const badges = {
+  // Badge definitions (unchanged)
+  const badgeDefinitions = {
     foodie: { icon: '🍽️', name: 'Foodie Explorer', color: '#FF6B6B' },
     explorer: { icon: '🗺️', name: 'City Explorer', color: '#4ECDC4' },
     reviewer: { icon: '⭐', name: 'Top Reviewer', color: '#45B7D1' }
+    // Add more badge definitions as needed
   };
 
   return (
     <div className="profile-page">
       <Header title="My Profile" />
-      
+
       <div className="profile-container">
         {/* Profile Header */}
         <div className="profile-header">
@@ -88,7 +110,7 @@ const ProfilePage = () => {
           </div>
           <div className="profile-info">
             <h2>{user?.name || 'Food Explorer'}</h2>
-            <p>{user?.email || 'explorer@foodie.com'}</p>
+            <p>{user?.email || ''}</p>
           </div>
         </div>
 
@@ -102,17 +124,17 @@ const ProfilePage = () => {
         <div className="quick-stats">
           <div className="stat-item">
             <Gem size={24} />
-            <span className="stat-number">{userStats.submittedGems}</span>
+            <span className="stat-number">{submittedGems}</span>
             <span className="stat-label">Gems Submitted</span>
           </div>
           <div className="stat-item">
             <Star size={24} />
-            <span className="stat-number">{userStats.gamePoints}</span>
+            <span className="stat-number">{gamePoints}</span>
             <span className="stat-label">Points</span>
           </div>
           <div className="stat-item">
             <Trophy size={24} />
-            <span className="stat-number">{userStats.badges.length}</span>
+            <span className="stat-number">{badges.length}</span>
             <span className="stat-label">Badges</span>
           </div>
         </div>
@@ -124,13 +146,42 @@ const ProfilePage = () => {
           <ChevronRight size={20} />
         </button>
 
+
+<div className="favorites-section">
+  <h3>Your Favorites</h3>
+  {favoriteRestaurants.length > 0 ? (
+    <div className="favorites-grid">
+      {favoriteRestaurants.map((fav) => (
+        <div key={fav.id} className="favorite-card">
+          <img src={fav.image} alt={fav.name} className="favorite-image" />
+          <div className="favorite-info">
+            <h4>{fav.name}</h4>
+            <p className="favorite-meta">
+              <Star size={14} fill="#FF6B35" color="#FF6B35" /> {fav.rating} • {fav.category}
+            </p>
+            <button
+              className="view-btn"
+              onClick={() => navigate(`/restaurant/${fav.id}`)}
+            >
+              View
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p className="no-favorites-msg">You haven’t added any favorites yet.</p>
+  )}
+</div>
+
+
         {/* Gamification Section */}
         <div className="gamification-section">
           <div className="section-header">
             <Trophy size={24} className="section-icon" />
             <div>
               <h3>Your Progress</h3>
-              <p>Level {userStats.level} Explorer</p>
+              <p>Level {level} Explorer</p>
             </div>
           </div>
 
@@ -138,16 +189,18 @@ const ProfilePage = () => {
           <div className="progress-container">
             <div className="progress-info">
               <span>Game Points</span>
-              <span>{userStats.gamePoints}/{userStats.nextLevelPoints}</span>
+              <span>
+                {gamePoints}/{level * 1000}
+              </span>
             </div>
             <div className="progress-bar">
-              <div 
-                className="progress-fill" 
+              <div
+                className="progress-fill"
                 style={{ width: `${progressPercentage}%` }}
-              ></div>
+              />
             </div>
             <p className="progress-text">
-              {userStats.nextLevelPoints - userStats.gamePoints} points to next level
+              {level * 1000 - gamePoints} points to next level
             </p>
           </div>
 
@@ -160,13 +213,21 @@ const ProfilePage = () => {
             <div className="objectives-progress">
               <div className="objective-item">
                 <span>Complete Challenges</span>
-                <span>{userStats.completedChallenges}/{userStats.totalChallenges}</span>
+                <span>
+                  {completedChallenges}/{totalChallenges}
+                </span>
               </div>
               <div className="progress-bar small">
-                <div 
-                  className="progress-fill" 
-                  style={{ width: `${(userStats.completedChallenges / userStats.totalChallenges) * 100}%` }}
-                ></div>
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${
+                      totalChallenges > 0
+                        ? (completedChallenges / totalChallenges) * 100
+                        : 0
+                    }%`
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -175,10 +236,14 @@ const ProfilePage = () => {
           <div className="badges-container">
             <h4>Your Badges</h4>
             <div className="badges-grid">
-              {userStats.badges.map((badgeKey, index) => {
-                const badge = badges[badgeKey];
+              {badges.map((badgeKey, index) => {
+                const badge = badgeDefinitions[badgeKey];
                 return (
-                  <div key={index} className="badge-item" style={{ borderColor: badge.color }}>
+                  <div
+                    key={index}
+                    className="badge-item"
+                    style={{ borderColor: badge.color }}
+                  >
                     <span className="badge-icon">{badge.icon}</span>
                     <span className="badge-name">{badge.name}</span>
                   </div>
@@ -192,7 +257,7 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Links Sections */}
+        {/* Links Section */}
         {linkSections.map((section, sectionIndex) => (
           <div key={sectionIndex} className="links-section">
             <h3 className="section-title">{section.title}</h3>

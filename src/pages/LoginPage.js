@@ -1,5 +1,4 @@
 // src/pages/LoginPage.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -9,51 +8,111 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, register } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    // Simple validation: require name, email, and password
-    if (!name || !email || !password) {
-      setError('Please enter your name, email, and password.');
-      return;
+    try {
+      if (isRegistering) {
+        // Registration validation
+        if (!name || !email || !password || !confirmPassword) {
+          setError('Please fill in all fields.');
+          setLoading(false);
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          setError('Passwords do not match.');
+          setLoading(false);
+          return;
+        }
+
+        if (password.length < 6) {
+          setError('Password must be at least 6 characters long.');
+          setLoading(false);
+          return;
+        }
+
+        // Call register function from AuthContext
+        const result = await register(name, email, password);
+        
+        if (result.success) {
+          // Registration successful, redirect to welcome splash
+          navigate('/welcome-splash');
+        } else {
+          setError(result.error || 'Registration failed. Please try again.');
+        }
+      } else {
+        // Login validation
+        if (!email || !password) {
+          setError('Please enter your email and password.');
+          setLoading(false);
+          return;
+        }
+
+        // Call login function from AuthContext (only email and password)
+        const result = await login(email, password);
+        
+        if (result.success) {
+          // Login successful, redirect to welcome splash
+          navigate('/welcome-splash');
+        } else {
+          setError(result.error || 'Invalid credentials. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Auth error:', error);
+      setError('An unexpected error occurred. Please try again.');
     }
+    
+    setLoading(false);
+  };
 
-    // Call login(name, email, password) so AuthContext stores the name
-    const success = login(name, email, password);
-
-    if (success) {
-      // Redirect to the welcome splash instead of directly to home
-      navigate('/welcome-splash');
-    } else {
-      setError('Invalid credentials. Please try again.');
-    }
+  const toggleMode = () => {
+    setIsRegistering(!isRegistering);
+    setError('');
+    setEmail('');
+    setName('');
+    setPassword('');
+    setConfirmPassword('');
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h1 className="auth-logo">FoodieGem</h1>
-        <h2 className="auth-title">Welcome Back</h2>
-        <p className="auth-subtitle">Sign in to continue</p>
+        <h2 className="auth-title">
+          {isRegistering ? 'Create Account' : 'Welcome Back'}
+        </h2>
+        <p className="auth-subtitle">
+          {isRegistering ? 'Join the FoodieGem community' : 'Sign in to continue'}
+        </p>
 
         {error && <div className="auth-error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-            />
-          </div>
+          {isRegistering && (
+            <div className="form-group">
+              <label htmlFor="name">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+                disabled={loading}
+              />
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -63,6 +122,7 @@ const LoginPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
+              disabled={loading}
             />
           </div>
 
@@ -73,25 +133,48 @@ const LoginPage = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder={isRegistering ? "Create a password (min 6 characters)" : "Enter your password"}
+              disabled={loading}
             />
           </div>
 
-          <button type="submit" className="auth-button">
-            Login
+          {isRegistering && (
+            <div className="form-group">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your password"
+                disabled={loading}
+              />
+            </div>
+          )}
+
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? (isRegistering ? 'Creating Account...' : 'Signing In...') : (isRegistering ? 'Create Account' : 'Login')}
           </button>
         </form>
 
         <div className="auth-links">
-          <a href="#forgot-password">Forgot Password?</a>
+          {!isRegistering && (
+            <a href="#forgot-password">Forgot Password?</a>
+          )}
+          
           <div className="auth-separator">
-            <span>Don't have an account?</span>
+            <span>
+              {isRegistering ? 'Already have an account?' : "Don't have an account?"}
+            </span>
           </div>
+          
           <button
+            type="button"
             className="auth-secondary-button"
-            onClick={() => navigate('/register')}
+            onClick={toggleMode}
+            disabled={loading}
           >
-            Create Account
+            {isRegistering ? 'Sign In' : 'Create Account'}
           </button>
         </div>
       </div>

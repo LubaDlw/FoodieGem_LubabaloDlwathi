@@ -1,8 +1,9 @@
 // src/pages/RestaurantDetailPage.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRestaurants } from '../context/RestaurantContext';
+import { useAuth } from '../context/AuthContext';   // ← import useAuth
 import {
   Star,
   MapPin,
@@ -19,8 +20,17 @@ const RestaurantDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { restaurants, loading } = useRestaurants();
+  const { user, addFavorite, removeFavorite } = useAuth();  // ← grab user + helpers
   const [activeTab, setCurrentTab] = useState('Overview');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Wait until restaurants & user load, then mark if this restaurant is favorited
+  useEffect(() => {
+    if (user && user.favorites) {
+      setIsFavorite(user.favorites.includes(id));
+    }
+  }, [user, id]);
 
   if (loading) {
     return (
@@ -69,6 +79,29 @@ const RestaurantDetailPage = () => {
   const allImages = images.length > 0 ? images : [image];
   const mapsKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   const encodedAddress = encodeURIComponent(location || '');
+
+  // Toggle favorite on heart click:
+  const handleFavoriteToggle = async () => {
+    if (!user) {
+      // Optionally: redirect to login if no user
+      navigate('/login');
+      return;
+    }
+
+    if (isFavorite) {
+      // Remove from favorites
+      const result = await removeFavorite(id);
+      if (result.success) {
+        setIsFavorite(false);
+      }
+    } else {
+      // Add to favorites
+      const result = await addFavorite(id);
+      if (result.success) {
+        setIsFavorite(true);
+      }
+    }
+  };
 
   const TabContent = () => {
     switch (activeTab) {
@@ -205,8 +238,11 @@ const RestaurantDetailPage = () => {
           <button className="action-btn">
             <Share size={20} />
           </button>
-          <button className="action-btn">
-            <Heart size={20} />
+          <button
+            className={`action-btn favorite-btn ${isFavorite ? 'favorited' : ''}`}
+            onClick={handleFavoriteToggle}
+          >
+            <Heart size={20} fill={isFavorite ? '#FF6B35' : 'none'} color={isFavorite ? '#FF6B35' : '#333'} />
           </button>
         </div>
       </header>

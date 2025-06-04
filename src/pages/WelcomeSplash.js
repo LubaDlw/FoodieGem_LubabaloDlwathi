@@ -1,22 +1,48 @@
-// Custom WelcomeSplash component that uses the user's name
+// src/pages/WelcomeSplash.jsx
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import SplashPage from './SplashPage';
 
 const WelcomeSplash = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   
-  // Get the user's name or use a default greeting
-  const userName = user?.name || '';
+  // Debug what we're getting from auth
+  console.log('WelcomeSplash Debug:', {
+    user: user,
+    userType: typeof user,
+    loading: loading
+  });
+  
+  // Handle loading state
+  if (loading) {
+    return (
+      <SplashPage 
+        redirectPath="/home" 
+        duration={3000} 
+        message="Loading your profile..."
+      />
+    );
+  }
+  
+  // Ensure we have a valid string for the user name
+  let userName = '';
+  
+  if (user && typeof user === 'object') {
+    // Safely extract name, ensuring it's a string
+    userName = String(user.name || user.displayName || '').trim();
+  }
+  
   const welcomeMessage = userName 
     ? `Welcome back, ${userName}! Loading your recommendations...`
-    : `Welcome back! Loading your recommendations...`;
+    : 'Welcome back! Loading your recommendations...';
+  
+  console.log('Final welcomeMessage:', welcomeMessage);
   
   return (
     <SplashPage 
       redirectPath="/home" 
       duration={5000} 
-      message={welcomeMessage} 
+      message={welcomeMessage}
     />
   );
 };
