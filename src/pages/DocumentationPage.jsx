@@ -75,7 +75,33 @@ const DocumentationPage = () => {
           <h2>FoodieGem Documentation</h2>
           <p>Documentation and Design Changes for FoodieGem</p>
         </div>
+<DocumentationSection
+          title="Changes & Features"
+          icon={Search}
+          isOpen={openSections.discovering}
+          onToggle={() => toggleSection('discovering')}
+        >
+          <div className="doc-content">
+            <h4>Changes Made</h4>
+            <p>
+              Key changes made to the FoodieGem app from the design: One of the key changes is that of the user flow in the submit gem section, originally, I had planned to include some validation system, however, I found that to be not needed for this assignment, instead gems are automatically approved so as the user fills the required sections and inputs
+            </p>
 
+            <h4>UI/UX Changes</h4>
+            <p>
+              The following enhancments were made to improve user experience:
+            </p>
+            <ul>
+              <li>Additional navigation buttons on pages such as restaurant detail page, category etc, to facillitate better navigation</li>
+              <li>Increased size and balanced spacing to ensure content is easy to engage with </li>
+              <li>Increased Interactive Elements</li>
+              <li>Gamification </li>
+              <li>Firebase Database to increase prformance + load states</li>
+            </ul>
+
+           
+          </div>
+        </DocumentationSection>
         <DocumentationSection
           title="Getting Started"
           icon={Smartphone}
