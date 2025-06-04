@@ -1,37 +1,69 @@
 // src/pages/RestaurantDetailPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRestaurants } from '../context/RestaurantContext';
-import { useAuth } from '../context/AuthContext';   // ← import useAuth
-import {
-  Star,
-  MapPin,
-  ArrowLeft,
-  Clock,
-  Phone,
-  Share,
-  Heart
-} from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import BottomNavigation from '../components/BottomNavigation';
+
+// Import refactored components
+import RestaurantHeader from '../components/RestaurantDetail/RestaurantHeader';
+import RestaurantImageCarousel from '../components/RestaurantDetail/RestaurantImageCarousel';
+import RestaurantInfoSection from '../components/RestaurantDetail/RestaurantInfoSection';
+import TabNavigation from '../components/RestaurantDetail/TabNavigation';
+import OverviewTab from '../components/RestaurantDetail/OverviewTab';
+import MenuTab from '../components/RestaurantDetail/MenuTab';
+import LocationTab from '../components/RestaurantDetail/LocationTab';
+
 import '../styles/RestaurantDetailPage.css';
 
 const RestaurantDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { restaurants, loading } = useRestaurants();
-  const { user, addFavorite, removeFavorite } = useAuth();  // ← grab user + helpers
-  const [activeTab, setCurrentTab] = useState('Overview');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { user, addFavorite, removeFavorite } = useAuth();
+  
+  const [activeTab, setActiveTab] = useState('Overview');
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Wait until restaurants & user load, then mark if this restaurant is favorited
+  // Check if restaurant is favorited when user or restaurant loads
   useEffect(() => {
     if (user && user.favorites) {
       setIsFavorite(user.favorites.includes(id));
     }
   }, [user, id]);
 
+  // Handle favorite toggle
+  const handleFavoriteToggle = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        const result = await removeFavorite(id);
+        if (result.success) {
+          setIsFavorite(false);
+        }
+      } else {
+        const result = await addFavorite(id);
+        if (result.success) {
+          setIsFavorite(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
+  // Handle adding items to cart (placeholder for future implementation)
+  const handleAddToCart = (item) => {
+    // TODO: Implement cart functionality
+    console.log('Added to cart:', item);
+    // You could show a toast notification here
+  };
+
+  // Loading state
   if (loading) {
     return (
       <div className="loading-container">
@@ -41,7 +73,10 @@ const RestaurantDetailPage = () => {
     );
   }
 
+  // Find restaurant
   const restaurant = restaurants.find((r) => r.id === id);
+  
+  // Not found state
   if (!restaurant) {
     return (
       <div className="not-found-container">
@@ -53,6 +88,7 @@ const RestaurantDetailPage = () => {
     );
   }
 
+  // Extract restaurant data with defaults
   const {
     name,
     image,
@@ -76,152 +112,40 @@ const RestaurantDetailPage = () => {
     phone = '+1 (555) 123-4567'
   } = restaurant;
 
+  // Ensure images array
   const allImages = images.length > 0 ? images : [image];
-  const mapsKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-  const encodedAddress = encodeURIComponent(location || '');
 
-  // Toggle favorite on heart click:
-  const handleFavoriteToggle = async () => {
-    if (!user) {
-      // Optionally: redirect to login if no user
-      navigate('/login');
-      return;
-    }
-
-    if (isFavorite) {
-      // Remove from favorites
-      const result = await removeFavorite(id);
-      if (result.success) {
-        setIsFavorite(false);
-      }
-    } else {
-      // Add to favorites
-      const result = await addFavorite(id);
-      if (result.success) {
-        setIsFavorite(true);
-      }
-    }
-  };
-
-  const TabContent = () => {
+  // Render tab content based on active tab
+  const renderTabContent = () => {
     switch (activeTab) {
       case 'Overview':
         return (
-          <div className="tab-content">
-            <div className="info-section">
-              <h3>About</h3>
-              <p>{description}</p>
-            </div>
-
-            <div className="contact-info">
-              <div className="contact-item">
-                <Clock size={18} />
-                <span>{openTime}</span>
-              </div>
-              <div className="contact-item">
-                <Phone size={18} />
-                <span>{phone}</span>
-              </div>
-              <div className="contact-item">
-                <MapPin size={18} />
-                <span>{location || distanceText}</span>
-              </div>
-            </div>
-
-            <div className="featured-section">
-              <h3>Featured Dishes</h3>
-              <div className="featured-grid">
-                {menu.slice(0, 4).map((item, idx) => (
-                  <div key={idx} className="featured-card">
-                    <div className="dish-icon">{item.image}</div>
-                    <div className="dish-info">
-                      <h4>{item.name}</h4>
-                      <p className="dish-price">{item.price}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <OverviewTab
+            description={description}
+            openTime={openTime}
+            phone={phone}
+            location={location}
+            distanceText={distanceText}
+            menu={menu}
+          />
         );
-
       case 'Menu':
         return (
-          <div className="tab-content">
-            <div className="menu-section">
-              <h3>Full Menu</h3>
-              <div className="menu-grid">
-                {menu.map((item, idx) => (
-                  <div key={idx} className="menu-item">
-                    <div className="menu-item-icon">{item.image}</div>
-                    <div className="menu-item-details">
-                      <h4>{item.name}</h4>
-                      <p className="menu-item-description">{item.description}</p>
-                      <p className="menu-item-price">{item.price}</p>
-                    </div>
-                    <button className="add-btn">+</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <MenuTab
+            menu={menu}
+            onAddToCart={handleAddToCart}
+          />
         );
-
       case 'Location':
         return (
-          <div className="tab-content">
-            <div className="location-section">
-              <h3>Location & Contact</h3>
-              <div className="location-info">
-                <div className="location-item">
-                  <MapPin size={20} />
-                  <div>
-                    <h4>Address</h4>
-                    <p>{location || distanceText}</p>
-                  </div>
-                </div>
-                <div className="location-item">
-                  <Phone size={20} />
-                  <div>
-                    <h4>Phone</h4>
-                    <p>{phone}</p>
-                  </div>
-                </div>
-                <div className="location-item">
-                  <Clock size={20} />
-                  <div>
-                    <h4>Hours</h4>
-                    <p>{openTime}</p>
-                  </div>
-                </div>
-                <div className="location-item">
-                  <Clock size={20} />
-                  <div>
-                    <h4>Average Cost</h4>
-                    <p>{avgCost}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="map-container">
-                <iframe
-                  title="restaurant-map"
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  style={{ border: 0 }}
-                  src={
-                    `https://www.google.com/maps/embed/v1/place` +
-                    `?key=${mapsKey}` +
-                    `&q=${encodedAddress}`
-                  }
-                  allowFullScreen
-                />
-              </div>
-            </div>
-          </div>
+          <LocationTab
+            location={location}
+            distanceText={distanceText}
+            phone={phone}
+            openTime={openTime}
+            avgCost={avgCost}
+          />
         );
-
       default:
         return null;
     }
@@ -229,82 +153,33 @@ const RestaurantDetailPage = () => {
 
   return (
     <div className="restaurant-detail">
-      {/* Header */}
-      <header className="restaurant-header">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <ArrowLeft size={20} />
-        </button>
-        <div className="header-actions">
-          <button className="action-btn">
-            <Share size={20} />
-          </button>
-          <button
-            className={`action-btn favorite-btn ${isFavorite ? 'favorited' : ''}`}
-            onClick={handleFavoriteToggle}
-          >
-            <Heart size={20} fill={isFavorite ? '#FF6B35' : 'none'} color={isFavorite ? '#FF6B35' : '#333'} />
-          </button>
-        </div>
-      </header>
+      <RestaurantHeader
+        restaurantId={id}
+        isFavorite={isFavorite}
+        onFavoriteToggle={handleFavoriteToggle}
+      />
 
-      {/* Image Carousel */}
-      <section className="image-section">
-        {promo && <div className="promo-badge">{promo}</div>}
-        <div className="main-image-container">
-          <img
-            src={allImages[currentImageIndex]}
-            alt={name}
-            className="main-image"
-          />
-        </div>
-        {allImages.length > 1 && (
-          <div className="image-thumbnails">
-            {allImages.map((img, idx) => (
-              <button
-                key={idx}
-                className={`thumbnail ${idx === currentImageIndex ? 'active' : ''}`}
-                onClick={() => setCurrentImageIndex(idx)}
-              >
-                <img src={img} alt={`${name} ${idx + 1}`} />
-              </button>
-            ))}
-          </div>
-        )}
-      </section>
+      <RestaurantImageCarousel
+        images={allImages}
+        restaurantName={name}
+        promo={promo}
+      />
 
-      {/* Restaurant Info */}
       <section className="restaurant-info">
-        <div className="restaurant-title">
-          <h1>{name}</h1>
-          <div className="status-badge">Open</div>
-        </div>
+        <RestaurantInfoSection
+          name={name}
+          category={category}
+          avgCost={avgCost}
+          rating={rating}
+          isOpen={true}
+        />
 
-        <div className="restaurant-meta">
-          <div className="meta-left">
-            <span className="category">{category}</span>
-            <span className="avg-cost">Avg Cost: {avgCost}</span>
-          </div>
-          <div className="rating-info">
-            <Star size={16} fill="#FF6B35" color="#FF6B35" />
-            <span>{rating}</span>
-          </div>
-        </div>
+        <TabNavigation
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
-        {/* Navigation Tabs */}
-        <div className="tab-navigation">
-          {['Overview', 'Menu', 'Location'].map((tab) => (
-            <button
-              key={tab}
-              className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-              onClick={() => setCurrentTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        <TabContent />
+        {renderTabContent()}
       </section>
 
       <BottomNavigation activeTab="restaurants" />
