@@ -1,4 +1,4 @@
-// src/data/categories.js
+// categories const
 
 export const categories = [
   { id: 1, name: "Date Night", image: "../assets/topRated.jpg" },

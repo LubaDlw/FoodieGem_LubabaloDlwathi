@@ -8,7 +8,6 @@ import {
   User,
   Star,
   Trophy,
-  Target,
   Gem,
   MapPin,
   FileText,
@@ -56,12 +55,10 @@ const ProfilePage = () => {
   const gamePoints = user?.gamePoints || 0;
   const level = user?.level || 1;
   const badges = user?.badges || [];
-  const completedChallenges = user?.completedChallenges || 0;
-  const totalChallenges = user?.totalChallenges || 5;
 
   const progressPercentage = ((gamePoints / (level * 1000)) * 100).toFixed(0);
 
-  // Updated link sections (removed Account Settings and Change Details)
+  // Updated link sections (removed Account Settings, replaced Support with Documentation)
   const linkSections = [
     {
       title: 'ACCOUNT',
@@ -71,7 +68,7 @@ const ProfilePage = () => {
       ]
     },
     {
-      title: 'SUPPORT',
+      title: 'DOCUMENTATION',
       items: [
         { icon: FileText, label: 'Documentation', path: '/docs' }
       ]
@@ -195,34 +192,6 @@ const ProfilePage = () => {
             <p className="progress-text">
               {level * 1000 - gamePoints} points to next level
             </p>
-          </div>
-
-          {/* Current Objectives */}
-          <div className="objectives-container">
-            <div className="objectives-header">
-              <Target size={20} />
-              <span>Objectives</span>
-            </div>
-            <div className="objectives-progress">
-              <div className="objective-item">
-                <span>Complete Challenges</span>
-                <span>
-                  {completedChallenges}/{totalChallenges}
-                </span>
-              </div>
-              <div className="progress-bar small">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${
-                      totalChallenges > 0
-                        ? (completedChallenges / totalChallenges) * 100
-                        : 0
-                    }%`
-                  }}
-                />
-              </div>
-            </div>
           </div>
 
           {/* Badges */}

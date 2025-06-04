@@ -19,6 +19,7 @@ import '../styles/SubmitGemPage.css';
 
 // ← Import updated service (no image-file upload, just URL strings)
 import { submitRestaurant } from '../services/restaurantsService';
+import { categories } from '../utils/categories';
 
 const SubmitGemPage = () => {
   const { user, incrementSubmittedGems } = useAuth();
@@ -44,27 +45,6 @@ const SubmitGemPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const categories = [
-    'Fast Food',
-    'Fine Dining',
-    'Casual Dining',
-    'Cafe',
-    'Bar',
-    'Pizza',
-    'Sushi',
-    'Italian',
-    'Mexican',
-    'Indian',
-    'Chinese',
-    'American',
-    'Mediterranean',
-    'Thai',
-    'Korean',
-    'Japanese',
-    'Vegetarian',
-    'Vegan'
-  ];
-
   // ──────────────────────────────────────────────────────────────────────────
   // Input handlers
   // ──────────────────────────────────────────────────────────────────────────
@@ -77,12 +57,12 @@ const SubmitGemPage = () => {
     }));
   };
 
-  const handleCategoryToggle = (category) => {
+  const handleCategoryToggle = (categoryName) => {
     setFormData((prev) => ({
       ...prev,
-      category: prev.category.includes(category)
-        ? prev.category.filter((c) => c !== category)
-        : [...prev.category, category]
+      category: prev.category.includes(categoryName)
+        ? prev.category.filter((c) => c !== categoryName)
+        : [...prev.category, categoryName]
     }));
   };
 
@@ -128,6 +108,14 @@ const SubmitGemPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if user is logged in
+    if (!user || !user.uid) {
+      alert('You must be logged in to submit a gem');
+      return;
+    }
+
+    console.log('Current user:', user); // Debug log
+
     // 1) Basic validation:
     //    - Name must not be blank
     //    - MainImageUrl must look like a URL
@@ -168,7 +156,7 @@ const SubmitGemPage = () => {
     setLoading(true);
 
     try {
-      // 2) Build the “restaurantData” object
+      // 2) Build the "restaurantData" object
       const restaurantData = {
         name: formData.name.trim(),
         promo: formData.promo.trim(),
@@ -185,6 +173,8 @@ const SubmitGemPage = () => {
         .map((u) => u.trim())
         .filter((u) => u.length > 0);
 
+      console.log('Submitting restaurant with user ID:', user.uid); // Debug log
+
       // 4) Call our service helper, which simply writes Firestore with the URL strings:
       const result = await submitRestaurant(
         restaurantData,
@@ -194,8 +184,17 @@ const SubmitGemPage = () => {
       );
 
       if (result.success) {
-        // 5) Increment “submittedGems” & “gamePoints” in the user’s profile
-        await incrementSubmittedGems();
+        console.log('Restaurant submitted successfully, incrementing gems...'); // Debug log
+        console.log('Current submitted gems before increment:', user.submittedGems); // Debug log
+
+        // 5) Increment "submittedGems" & "gamePoints" in the user's profile
+        try {
+          await incrementSubmittedGems();
+          console.log('Gems incremented successfully'); // Debug log
+        } catch (gemError) {
+          console.error('Error incrementing gems:', gemError);
+          // Don't fail the whole process, but log the error
+        }
 
         // 6) Show success screen then redirect to /profile
         setSuccess(true);
@@ -204,7 +203,7 @@ const SubmitGemPage = () => {
         }, 2000);
       } else {
         console.error('submitRestaurant returned an error:', result.error);
-        alert('Failed to submit. Please try again.');
+        alert('Failed to submit restaurant. Please try again.');
       }
     } catch (error) {
       console.error('Error in handleSubmit:', error);
@@ -228,6 +227,8 @@ const SubmitGemPage = () => {
           </div>
           <h2>Restaurant Submitted Successfully!</h2>
           <p>Thank you for sharing your gem with the community!</p>
+          <p>You've earned 50 points and your gem count has been updated!</p>
+          <p><strong>Note:</strong> To view your submitted gem, you'll need to refresh the page.</p>
           <div className="success-loader">
             <Loader2 className="spinner" size={24} />
             <span>Redirecting to profile...</span>
@@ -238,7 +239,7 @@ const SubmitGemPage = () => {
   }
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Main “Submit a Gem” form
+  // Main "Submit a Gem" form
   // ──────────────────────────────────────────────────────────────────────────
 
   return (
@@ -342,15 +343,15 @@ const SubmitGemPage = () => {
             <div className="categories-grid">
               {categories.map((category) => (
                 <button
-                  key={category}
+                  key={category.id}
                   type="button"
                   className={`category-tag ${
-                    formData.category.includes(category) ? 'selected' : ''
+                    formData.category.includes(category.name) ? 'selected' : ''
                   }`}
-                  onClick={() => handleCategoryToggle(category)}
+                  onClick={() => handleCategoryToggle(category.name)}
                 >
                   <Tag size={16} />
-                  {category}
+                  {category.name}
                 </button>
               ))}
             </div>
