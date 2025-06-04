@@ -4,22 +4,14 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import getLatLngFromAddress from '../utils/getLatLngFromAddress';
 import calculateDistance from '../utils/calculateDistance';
-
 const RestaurantContext = createContext();
 export const useRestaurants = () => useContext(RestaurantContext);
-
 export const RestaurantProvider = ({ children }) => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchRestaurants = async () => {
     try {
-    //   const cached = sessionStorage.getItem('restaurants');
-    //   if (cached) {
-    //     setRestaurants(JSON.parse(cached));
-    //     setLoading(false);
-    //     return;
-    //   }
 
       const snapshot = await getDocs(collection(db, 'restaurants'));
       const raw = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

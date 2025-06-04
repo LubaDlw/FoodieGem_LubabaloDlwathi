@@ -1,4 +1,3 @@
-// src/components/SubmitGem/AdditionalImageUrls.jsx
 import React from 'react';
 
 const AdditionalImageUrls = ({ 

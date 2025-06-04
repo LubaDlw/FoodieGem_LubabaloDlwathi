@@ -1,4 +1,3 @@
-// src/components/SubmitGem/ImageUrlInput.jsx
 import React from 'react';
 
 const ImageUrlInput = ({ 

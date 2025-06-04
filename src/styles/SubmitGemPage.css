@@ -1,6 +1,5 @@
-/* SubmitGemPage.css - Refactored and Organized */
 
-/* ==================== BASE STYLES ==================== */
+/*  BASE STYLES = */
 .submit-gem-page {
   min-height: 100vh;
   background: #fafafa;
@@ -19,7 +18,7 @@
   gap: 24px;
 }
 
-/* ==================== FORM SECTIONS ==================== */
+/*  FORM SECTIONS  */
 .form-section {
   background: #fff;
   border-radius: 16px;
@@ -43,7 +42,7 @@
   gap: 8px;
 }
 
-/* ==================== FORM INPUTS ==================== */
+/*  FORM INPUTS  */
 .form-group {
   margin-bottom: 20px;
 }
@@ -118,7 +117,7 @@
   min-height: 100px;
 }
 
-/* ==================== CATEGORY SELECTOR ==================== */
+/*  CATEGORY SELECTOR  */
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -155,7 +154,7 @@
   flex-shrink: 0;
 }
 
-/* ==================== RATING SELECTOR ==================== */
+/*  RATING SELECTOR  */
 .rating-container {
   display: flex;
   align-items: center;
@@ -188,7 +187,7 @@
   font-weight: 500;
 }
 
-/* ==================== IMAGE URL INPUTS ==================== */
+/*  IMAGE URL INPUTS  */
 .additional-images-section {
   display: flex;
   flex-direction: column;
@@ -241,7 +240,7 @@
   color: white;
 }
 
-/* ==================== SUBMIT BUTTON ==================== */
+/*  SUBMIT BUTTON  */
 .submit-button {
   display: flex;
   align-items: center;
@@ -271,7 +270,7 @@
   transform: none;
 }
 
-/* ==================== LOADING SPINNER ==================== */
+/*  LOADING SPINNER  */
 .spinner {
   animation: spin 1s linear infinite;
 }
@@ -281,7 +280,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* ==================== SUCCESS SCREEN ==================== */
+/*  SUCCESS SCREEN  */
 .success-container {
   display: flex;
   flex-direction: column;
@@ -336,7 +335,7 @@
   font-size: 14px;
 }
 
-/* ==================== RESPONSIVE DESIGN ==================== */
+/*  RESPONSIVE DESIGN = */
 
 /* Mobile Styles */
 @media (max-width: 768px) {

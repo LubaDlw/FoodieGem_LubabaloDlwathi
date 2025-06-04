@@ -1,4 +1,3 @@
-// src/pages/WelcomeSplash.jsx
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import SplashPage from './SplashPage';

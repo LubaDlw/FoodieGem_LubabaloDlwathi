@@ -1,4 +1,3 @@
-// src/components/SubmitGem/SuccessScreen.jsx
 import React from 'react';
 import { Check, Loader2 } from 'lucide-react';
 import Header from '../Header';

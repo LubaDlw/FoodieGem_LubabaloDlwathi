@@ -1,4 +1,3 @@
-// src/components/RestaurantDetail/RestaurantInfoSection.jsx
 import React from 'react';
 import { Star } from 'lucide-react';
 

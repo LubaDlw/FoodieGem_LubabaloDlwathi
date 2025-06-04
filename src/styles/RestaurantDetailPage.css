@@ -1,11 +1,11 @@
-/* src/styles/RestaurantDetailPage.css */
+
 
 .restaurant-detail {
   min-height: 100vh;
   background: #fafafa;
   display: flex;
   flex-direction: column;
-  padding-bottom: 80px; /* Add padding to prevent content hiding behind bottom nav */
+  padding-bottom: 80px; 
 }
 
 /* Header */

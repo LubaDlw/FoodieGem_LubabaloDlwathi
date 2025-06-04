@@ -1,4 +1,3 @@
-// src/components/SubmitGem/FormSection.jsx
 import React from 'react';
 
 const FormSection = ({ title, children, className = '' }) => (

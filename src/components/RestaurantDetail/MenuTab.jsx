@@ -1,4 +1,3 @@
-// src/components/RestaurantDetail/MenuTab.jsx
 import React from 'react';
 
 const MenuTab = ({ menu = [], onAddToCart }) => {

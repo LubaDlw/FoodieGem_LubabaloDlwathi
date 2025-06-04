@@ -1,4 +1,3 @@
-// src/components/SubmitGem/CategorySelector.jsx
 import React from 'react';
 import { Tag } from 'lucide-react';
 

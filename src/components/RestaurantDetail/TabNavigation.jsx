@@ -1,4 +1,3 @@
-// src/components/RestaurantDetail/TabNavigation.jsx
 import React from 'react';
 
 const TabNavigation = ({ activeTab, onTabChange, tabs = ['Overview', 'Menu', 'Location'] }) => {

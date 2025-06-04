@@ -1,4 +1,4 @@
-// src/components/SubmitGem/FormInput.jsx
+
 import React from 'react';
 
 const FormInput = ({ 
